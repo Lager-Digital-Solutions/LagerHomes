@@ -1,0 +1,211 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQs</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding-top: 4.5rem; /* Adjust for fixed navbar height */
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+    <nav class="navbar navbar-expand-md fixed-top" style="background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 0.5rem 1rem;">
+    <div class="container-fluid">
+      <!-- Brand -->
+      <!-- <a class="navbar-brand d-flex align-items-center" href="{% url 'airbnb:index' %}" style="color: #ff385c; font-weight: 700; font-size: 1.5rem;">
+        <i class="fas fa-home me-2"></i>
+        Lager Homes
+      </a> -->
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'airbnb:index' %}" style="color: #ff385c; font-weight: 700; font-size: 1.1rem;">
+        <img src="{% static 'airbnb/logo.png' %}" alt="Lager Homes" style="height: 2.5rem;">
+        Lager Homes
+      </a>
+
+      <!-- Mobile Toggle Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" style="border: none;">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navbar Content -->
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <!-- Navigation Links -->
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:index' %}" style="color: #222222; font-weight: 500;">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:about' %}" style="color: #222222; font-weight: 500;">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:contact' %}" style="color: #222222; font-weight: 500;">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:terms' %}" style="color: #222222; font-weight: 500;">Terms</a>
+          </li>
+          {% comment %} <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:faq' %}" style="color: #222222; font-weight: 500;">FAQs</a>
+          </li> {% endcomment %}
+        </ul>
+
+        <!-- Search Form -->
+        {% comment %} <form class="d-flex mb-3 mb-md-0 me-md-3" role="search">
+          <div class="input-group">
+            <input class="form-control" type="search" placeholder="Search properties..." aria-label="Search"
+              style="border-radius: 20px 0 0 20px; border: 1px solid #ced4da;">
+            <button class="btn btn-outline-primary" type="submit"
+              style="border-radius: 0 20px 20px 0; border: 1px solid #ced4da; border-left: none;">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form> {% endcomment %}
+
+
+        <!-- User Menu -->
+{% if request.user.is_authenticated %}
+<div class="dropdown mt-3 mt-md-0">
+  <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center" type="button" id="dropdownMenuButton"
+    data-bs-toggle="dropdown" aria-expanded="false"
+    style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+    <i class="fas fa-user-circle me-2"></i>
+    {{ request.user.username }}
+    <i class="fas fa-chevron-down ms-2" style="font-size: 0.8em;"></i>
+  </button>
+  <div class="px-3" style="position: absolute; width: 100%; left: 0;">
+    <ul class="dropdown-menu w-100 shadow text-center"
+        style="border-radius: 15px; border: none; margin-top: 0.5rem;">
+      <li>
+        <a class="dropdown-item py-2" href="{% url 'airbnb:saved_listings' %}">
+          <i class="far fa-heart me-2"></i>Saved Listings
+        </a>
+      </li>
+      <li>
+        <form method="post" action="{% url 'airbnb:dashboard' %}">
+          {% csrf_token %}
+          <button class="dropdown-item py-2 w-100" type="submit">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+          </button>
+        </form>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      <li>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button class="dropdown-item py-2 text-danger w-100" type="submit">
+            <i class="fas fa-sign-out-alt me-2"></i>Log out
+          </button>
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
+{% else %}
+<div class="d-flex gap-2 mt-3 mt-md-0">
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary" style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+      <i class="fas fa-sign-in-alt me-2"></i>Login
+    </button>
+  </form>
+  <a href="{% url 'users:register' %}" class="btn btn-outline-primary" style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+    <i class="fas fa-user-plus me-2"></i>Register
+  </a>
+</div>
+{% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- FAQ Section -->
+  <div class="container my-5">
+    <h1 class="text-center mb-4">Frequently Asked Questions</h1>
+    <div class="accordion" id="faqAccordion">
+      <!-- General Section -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#general" aria-expanded="true" aria-controls="general">
+            General
+          </button>
+        </h2>
+        <div id="general" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <strong>What is this platform about?</strong> Our platform connects hosts who have available properties with guests looking for short-term or long-term rentals. <br><br>
+            <strong>Is creating an account free?</strong> Yes, creating an account is completely free for both hosts and guests. <br><br>
+            {% comment %} <strong>How do I search for a property?</strong> Use the search bar on the homepage to input your destination, travel dates, and the number of guests. You can also apply filters like property type, price range, and amenities. {% endcomment %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Guests Section -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guests" aria-expanded="false" aria-controls="guests">
+            For Guests
+          </button>
+        </h2>
+        <div id="guests" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <strong>How do I book a property?</strong> Select a listing, check availability for your desired dates, and confirm your booking. <br><br>
+            <strong>Can I cancel my booking?</strong> Yes, cancellations depend on the property’s cancellation policy. <br><br>
+            <strong>Are the listings verified?</strong> We encourage hosts to provide accurate information and photos. Reviews help ensure accuracy.
+          </div>
+        </div>
+      </div>
+
+      <!-- Hosts Section -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hosts" aria-expanded="false" aria-controls="hosts">
+            For Hosts
+          </button>
+        </h2>
+        <div id="hosts" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <strong>How do I list my property?</strong> If you are interested and want to have your place listed, go ahead and register as a host. We will reach out to you as soon as possible.<br><br>
+            {% comment %} <strong>What if a guest damages my property?</strong> You can charge a security deposit to cover damages. {% endcomment %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments Section -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#payments" aria-expanded="false" aria-controls="payments">
+            Payments
+          </button>
+        </h2>
+        <div id="payments" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <strong>What payment methods do you accept?</strong> We accept all major banks as well as Telebirr and other wallets. <br><br>
+            <strong>Is my payment information secure?</strong> Yes, all transactions are encrypted and secure.
+          </div>
+        </div>
+      </div>
+
+      <!-- Support Section -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#support" aria-expanded="false" aria-controls="support">
+            Support
+          </button>
+        </h2>
+        <div id="support" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <strong>How do I contact customer support?</strong> Use the contact page or email us at support@lagerhomes.com.<br><br>
+            {% comment %} <strong>What if I forget my password?</strong> Use the "Forgot Password" link on the login page to reset it. {% endcomment %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Reviews for {{ listing.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Circular:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'airbnb/listing_style.css' %}">
+
+    <style>
+        /* General Styles */
+        .review-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .review-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .review-card .reviewer-avatar i {
+            color: #6c757d;
+            /* Muted color for the avatar */
+        }
+
+        .review-card .reviewer-details h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-card .reviewer-details small {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .review-card .review-text p {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .review-card .rating-details {
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .review-card .rating-details .fa-star {
+            margin-right: 2px;
+        }
+
+        .review-card .rating-details .text-warning {
+            color: #f5a623;
+            /* Star color */
+        }
+
+        .review-card .rating-details .text-muted {
+            color: #6c757d;
+            /* Muted text color */
+        }
+
+        .back-to-listing {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md fixed-top"
+        style="background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 0.5rem 1rem;">
+        <div class="container-fluid">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'airbnb:index' %}"
+                style="color: #ff385c; font-weight: 700; font-size: 1.5rem;">
+                <i class="fas fa-home me-2"></i>
+                Lager Homes
+            </a>
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
+                style="border: none;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Navbar Content -->
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <!-- Navigation Links -->
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'airbnb:about' %}"
+                            style="color: #222222; font-weight: 500;">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'airbnb:contact' %}"
+                            style="color: #222222; font-weight: 500;">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'airbnb:terms' %}"
+                            style="color: #222222; font-weight: 500;">Terms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'airbnb:faq' %}" style="color: #222222; font-weight: 500;">FAQs</a>
+                      </li>
+                </ul>
+
+                <!-- User Menu -->
+                {% if request.user.is_authenticated %}
+                <div class="dropdown mt-3 mt-md-0">
+                    <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center" type="button"
+                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+                        <i class="fas fa-user-circle me-2"></i>
+                        {{ request.user.username }}
+                        <i class="fas fa-chevron-down ms-2" style="font-size: 0.8em;"></i>
+                    </button>
+                    <div class="px-3" style="position: absolute; width: 100%; left: 0;">
+                        <ul class="dropdown-menu w-100 shadow text-center"
+                            style="border-radius: 15px; border: none; margin-top: 0.5rem;">
+                            <li>
+                                <a class="dropdown-item py-2" href="{% url 'airbnb:saved_listings' %}">
+                                    <i class="far fa-heart me-2"></i>Saved Listings
+                                </a>
+                            </li>
+                            <li>
+                                <form method="post" action="{% url 'airbnb:dashboard' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item py-2 w-100" type="submit">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item py-2 text-danger w-100" type="submit">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Log out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% else %}
+                <form method="post" action="{% url 'login' %}" class="mt-3 mt-md-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary w-100"
+                        style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 80px;">
+        <div class="back-to-listing">
+            <a href="{% url 'airbnb:listing_detail' listing.id %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Listing
+            </a>
+        </div>
+
+        <div class="reviews-section">
+            <div class="overall-rating-section">
+                <div class="rating-header">
+                    <div class="main-rating">
+                        <h1>{{ listing.get_average_ratings.overall|default:"0.0" }}</h1>
+                    </div>
+                    <div class="rating-subtitle">
+                        <h3>Overall Rating</h3>
+                        <p>Based on {{ reviews.count }} reviews</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reviews-container mt-3">
+                <h2>All Reviews</h2>
+                {% for review in reviews %}
+                <div class="card mb-3 review-card">
+                    <div class="card-body">
+                        <div class="reviewer-info d-flex align-items-center mb-3">
+                            <div class="reviewer-avatar me-3">
+                                <i class="fas fa-user-circle fa-2x text-muted"></i>
+                            </div>
+                            <div class="reviewer-details">
+                                <h5 class="card-title mb-0">{{ review.user.username }}</h5>
+                                <small class="text-muted">{{ review.created_at|date:"F j, Y" }}</small>
+                            </div>
+                        </div>
+                        <div class="review-text mb-3">
+                            <p class="card-text">{{ review.comment }}</p>
+                        </div>
+                        <div class="rating-details">
+                            <p class="mb-0">
+                                <strong>Overall Rating:</strong>
+                                {% with average=review.average_rating %}
+                                {% for i in "12345" %}
+                                {% if forloop.counter <= average %}
+                                <i class="fas fa-star text-warning"></i>
+                                {% else %}
+                                <i class="far fa-star text-muted"></i>
+                                {% endif %}
+                                {% endfor %}
+                                <span class="text-muted">({{ average|floatformat:1 }}/5)</span>
+                                {% endwith %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="alert alert-info" role="alert">
+                    No reviews yet. Be the first to leave a review!
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+
+</html>

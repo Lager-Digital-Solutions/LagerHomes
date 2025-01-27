@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Booking Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            background: #f3f3f3;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        p {
+            margin: 15px 0;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const yearSpan = document.getElementById('current-year');
+            yearSpan.textContent = new Date().getFullYear();
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>New Booking Notification</h2>
+
+        <h3>Booking Details:</h3>
+        <ul>
+            <li><strong>Property:</strong> {{ listing.title }}</li>
+            <li><strong>Host:</strong> {{ listing.host.username }}</li>
+            <li><strong>Guest:</strong> {{ user.username }}</li>
+            <li><strong>Check-in:</strong> {{ check_in }}</li>
+            <li><strong>Check-out:</strong> {{ check_out }}</li>
+            <li><strong>Total Days:</strong> {{ total_days }}</li>
+            <li><strong>Amount:</strong> ${{ amount }}</li>
+            <li><strong>Payment ID:</strong> {{ payment_id }}</li>
+        </ul>
+
+        <p>This is an automated notification. If you have any questions, please contact our support team.</p>
+
+        <div class="footer">
+            &copy; <span id="current-year"></span> Your Property Rental Team. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

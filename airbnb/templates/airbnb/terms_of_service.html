@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lager Homes Terms of Service Agreement">
+    <title>Terms of Service - Lager Homes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 80px auto 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #444;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            p {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar Section -->
+      <nav class="navbar navbar-expand-md fixed-top" style="background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 0.5rem 1rem;">
+    <div class="container-fluid">
+      <!-- Brand -->
+      <!-- <a class="navbar-brand d-flex align-items-center" href="{% url 'airbnb:index' %}" style="color: #ff385c; font-weight: 700; font-size: 1.5rem;">
+        <i class="fas fa-home me-2"></i>
+        Lager Homes
+      </a> -->
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'airbnb:index' %}" style="color: #ff385c; font-weight: 700; font-size: 1.1rem;">
+        <img src="{% static 'airbnb/logo.png' %}" alt="Lager Homes" style="height: 2.5rem;">
+        Lager Homes
+      </a>
+
+      <!-- Mobile Toggle Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" style="border: none;">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navbar Content -->
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <!-- Navigation Links -->
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:index' %}" style="color: #222222; font-weight: 500;">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:about' %}" style="color: #222222; font-weight: 500;">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:contact' %}" style="color: #222222; font-weight: 500;">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:terms' %}" style="color: #222222; font-weight: 500;">Terms</a>
+          </li>
+          {% comment %} <li class="nav-item">
+            <a class="nav-link" href="{% url 'airbnb:faq' %}" style="color: #222222; font-weight: 500;">FAQs</a>
+          </li> {% endcomment %}
+        </ul>
+
+        <!-- Search Form -->
+        {% comment %} <form class="d-flex mb-3 mb-md-0 me-md-3" role="search">
+          <div class="input-group">
+            <input class="form-control" type="search" placeholder="Search properties..." aria-label="Search"
+              style="border-radius: 20px 0 0 20px; border: 1px solid #ced4da;">
+            <button class="btn btn-outline-primary" type="submit"
+              style="border-radius: 0 20px 20px 0; border: 1px solid #ced4da; border-left: none;">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form> {% endcomment %}
+
+
+        <!-- User Menu -->
+{% if request.user.is_authenticated %}
+<div class="dropdown mt-3 mt-md-0">
+  <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center" type="button" id="dropdownMenuButton"
+    data-bs-toggle="dropdown" aria-expanded="false"
+    style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+    <i class="fas fa-user-circle me-2"></i>
+    {{ request.user.username }}
+    <i class="fas fa-chevron-down ms-2" style="font-size: 0.8em;"></i>
+  </button>
+  <div class="px-3" style="position: absolute; width: 100%; left: 0;">
+    <ul class="dropdown-menu w-100 shadow text-center"
+        style="border-radius: 15px; border: none; margin-top: 0.5rem;">
+      <li>
+        <a class="dropdown-item py-2" href="{% url 'airbnb:saved_listings' %}">
+          <i class="far fa-heart me-2"></i>Saved Listings
+        </a>
+      </li>
+      <li>
+        <form method="post" action="{% url 'airbnb:dashboard' %}">
+          {% csrf_token %}
+          <button class="dropdown-item py-2 w-100" type="submit">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+          </button>
+        </form>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      <li>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button class="dropdown-item py-2 text-danger w-100" type="submit">
+            <i class="fas fa-sign-out-alt me-2"></i>Log out
+          </button>
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
+{% else %}
+<div class="d-flex gap-2 mt-3 mt-md-0">
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary" style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+      <i class="fas fa-sign-in-alt me-2"></i>Login
+    </button>
+  </form>
+  <a href="{% url 'users:register' %}" class="btn btn-outline-primary" style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+    <i class="fas fa-user-plus me-2"></i>Register
+  </a>
+</div>
+{% endif %}
+      </div>
+    </div>
+  </nav>
+
+    <!-- Terms of Service Content -->
+    <div class="container">
+        <h1>Terms of Service Agreement</h1>
+
+        <p><strong>IMPORTANT:</strong> Please read this agreement carefully before using the Lager Homes platform. This is a legal agreement between you and Lager Homes ("Company") regarding the use of the platform ("Service"). By accessing or using the Service, you agree to be bound by the terms and conditions of this agreement. If you do not agree to these terms, do not use the Service.</p>
+
+        <h2>Introduction</h2>
+        <p>The Service is provided to facilitate the listing, discovery, and booking of properties. The Service is licensed, not sold, to you for use under the terms of this Agreement. You must be at least 18 years old and legally capable of entering into agreements to use the Service. By using the Service, you represent and warrant that you meet these eligibility requirements.</p>
+
+        <h2>Account Requirements</h2>
+        <p>To access the Service, you must create an account with accurate and complete information. You are solely responsible for maintaining the confidentiality of your account credentials. The Company reserves the right to suspend or terminate your account if you violate this Agreement or engage in unauthorized activities. Unauthorized sharing or transfer of accounts is strictly prohibited.</p>
+
+        <h2>Booking and Fees</h2>
+        <p>When booking a property, you enter into a direct agreement with the Host. The Company acts as an intermediary and manages properties listed through the Service. All fees, including property rates, cleaning fees, deposits, and taxes, must be paid through the Service’s designated payment system. Cancellation policies are set by the Company and are binding on both Guests and Hosts.</p>
+
+        <h2>Host and Guest Responsibilities</h2>
+        <p>Hosts are required to provide accurate and up-to-date information about their properties and comply with applicable laws, including but not limited to the Ethiopian Civil Code Article 1723 (contractual obligations) and international standards for safety and health regulations. The Company reserves the right to penalize or suspend Hosts for frequent or last-minute cancellations. Guests are expected to use properties responsibly and are liable for any damages caused during their stay, as outlined under the Ethiopian Civil Code Article 2084 (liability for damages).</p>
+
+        <h2>Permitted Use</h2>
+        <p>You agree to use the Service only for lawful purposes. Any illegal or unauthorized use, including interfering with the Service’s functionality, is strictly prohibited. Only the Company is permitted to post or upload images or content to the Service. The Service and its content, including text, images, and software code, are owned by the Company or its licensors and are protected by intellectual property laws, such as the Ethiopian Intellectual Property Proclamation No. 501/2006 and relevant international treaties.</p>
+
+        <h2>Dispute Resolution and Applicable Laws</h2>
+        <p>The Company guarantees the accuracy of property listings and their availability under Ethiopian Commercial Code Article 242 (good faith in business practices). However, any disputes, damages, or losses arising between Guests and Hosts are not the responsibility of the Company and must be resolved directly between the involved parties. The Company does not mediate or involve itself in such disputes.</p>
+        <p>This Agreement is governed by the laws of Ethiopia, including the Ethiopian Arbitration and Conciliation Proclamation No. 309/1985, and applicable international laws, such as the United Nations Convention on Contracts for the International Sale of Goods (CISG). Any disputes arising from this Agreement must be resolved through binding arbitration under Ethiopian law.</p>
+
+        <h2>Modifications</h2>
+        <p>The Company reserves the right to modify this Agreement at any time. Changes will be communicated through the Service, and continued use constitutes acceptance of the modified Agreement.</p>
+
+        <p>For questions or concerns about this Agreement, please contact us at [Insert Email Address] or [Insert Phone Number].</p>
+
+        <p class="footer">&copy; 2025 Lager Homes. All rights reserved.</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

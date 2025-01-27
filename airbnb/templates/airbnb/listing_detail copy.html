@@ -1,0 +1,807 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ listing.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Circular:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'airbnb/listing_style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+
+
+    <style>
+        /* General Styles */
+        .review-form-section {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-heading {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        /* Rating Inputs with Text Above */
+        .rating-input-group {
+            margin-bottom: 20px;
+        }
+
+        .rating-label-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .rating-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #555555;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 5px;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            font-size: 26px;
+            /* Larger stars */
+            color: #d3d3d3;
+            /* Default star color */
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .star-rating input:checked~label,
+        .star-rating label:hover,
+        .star-rating label:hover~label {
+            color: #f5a623;
+            /* Highlighted star color */
+        }
+
+        /* Comment Input */
+        .comment-input {
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .comment-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #555555;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .comment-box {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333333;
+            resize: none;
+        }
+
+        .comment-box:focus {
+            outline: none;
+            border-color: #80bdff;
+            box-shadow: 0 0 4px rgba(128, 189, 255, 0.5);
+        }
+
+        /* Submit Button */
+        .submit-review-btn {
+            display: inline-block;
+            background: #ff385c;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-review-btn:hover {
+            background: #e0334f;
+        }
+
+        /* Login Prompt */
+        .login-prompt {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .login-prompt p {
+            font-size: 16px;
+            color: #555555;
+            margin-bottom: 10px;
+        }
+
+        .btn-login {
+            background: #007bff;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: #0056b3;
+        }
+
+        .review-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .review-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .review-card .reviewer-avatar i {
+            color: #6c757d;
+            /* Muted color for the avatar */
+        }
+
+        .review-card .reviewer-details h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-card .reviewer-details small {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .review-card .review-text p {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .review-card .rating-details {
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .review-card .rating-details .fa-star {
+            margin-right: 2px;
+        }
+
+        .review-card .rating-details .text-warning {
+            color: #f5a623;
+            /* Star color */
+        }
+
+        .review-card .rating-details .text-muted {
+            color: #6c757d;
+            /* Muted text color */
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md fixed-top"
+        style="background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 0.5rem 1rem;">
+        <div class="container-fluid">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'airbnb:index' %}"
+                style="color: #ff385c; font-weight: 700; font-size: 1.5rem;">
+                <i class="fas fa-home me-2"></i>
+                Lager Homes
+            </a>
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
+                style="border: none;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Navbar Content -->
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <!-- Navigation Links -->
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    {% comment %} <li class="nav-item">
+                        <a class="nav-link" href="#" style="color: #222222; font-weight: 500;">Home</a>
+                    </li> {% endcomment %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'airbnb:about' %}"
+                            style="color: #222222; font-weight: 500;">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'airbnb:contact' %}"
+                            style="color: #222222; font-weight: 500;">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'airbnb:terms' %}"
+                            style="color: #222222; font-weight: 500;">Terms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'airbnb:faq' %}" style="color: #222222; font-weight: 500;">FAQs</a>
+                      </li>
+                </ul>
+
+                <!-- Search Form -->
+                <form class="d-flex mb-3 mb-md-0 me-md-3" role="search">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Search properties..." aria-label="Search"
+                            style="border-radius: 20px 0 0 20px; border: 1px solid #ced4da;">
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius: 0 20px 20px 0; border: 1px solid #ced4da; border-left: none;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- User Menu -->
+                {% if request.user.is_authenticated %}
+                <div class="dropdown mt-3 mt-md-0">
+                    <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center" type="button"
+                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+                        <i class="fas fa-user-circle me-2"></i>
+                        {{ request.user.username }}
+                        <i class="fas fa-chevron-down ms-2" style="font-size: 0.8em;"></i>
+                    </button>
+                    <div class="px-3" style="position: absolute; width: 100%; left: 0;">
+                        <ul class="dropdown-menu w-100 shadow text-center"
+                            style="border-radius: 15px; border: none; margin-top: 0.5rem;">
+                            <li>
+                                <a class="dropdown-item py-2" href="{% url 'airbnb:saved_listings' %}">
+                                    <i class="far fa-heart me-2"></i>Saved Listings
+                                </a>
+                            </li>
+                            <li>
+                                <form method="post" action="{% url 'airbnb:dashboard' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item py-2 w-100" type="submit">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item py-2 text-danger w-100" type="submit">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Log out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% else %}
+                <form method="post" action="{% url 'login' %}" class="mt-3 mt-md-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary w-100"
+                        style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 80px;">
+        <div class="container">
+            <div class="listing-header">
+                <h1 class="listing-title">{{ listing.title }}</h1>
+                <div class="listing-location">{{ listing.city }}</div>
+            </div>
+            <div class="container">
+                {% if youtube_url %}
+                <div class="youtube-video">
+                    <iframe width="100%" height="315"
+                        src="{{ youtube_url }}?autoplay=1&mute=1&loop=1&playlist={{ video_id }}" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                {% endif %}
+            </div>
+
+            {% comment %} {% endif %} {% endcomment %}
+
+            <div class="photos-container">
+                <div class="photos-grid">
+                    {% for photo in photos %}
+                    <img src="{{ photo.image.url }}" alt="Listing photo"
+                        class="photo-item {% if forloop.first %}photo-main{% endif %}">
+                    {% endfor %}
+                </div>
+                {% if total_photos > 5 %}
+                <button class="show-all-photos" onclick="openPhotoModal()">
+                    <span>View more</span>
+                    <span>({{ total_photos }})</span>
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Photo Modal -->
+            <div id="photoModal" class="photo-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>All Photos</h2>
+                        <button class="close-modal" onclick="closePhotoModal()">&times;</button>
+                    </div>
+                    <div class="modal-photos">
+                        {% for photo in all_photos %}
+                        <div class="modal-photo-wrapper">
+                            <img src="{{ photo.image.url }}" alt="Listing photo" class="modal-photo">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" style="margin-top: 80px;">
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-lg-8 col-md-7">
+                        <!-- <div class="listing-header">
+                            <h1 class="listing-title">{{ listing.title }}</h1>
+                            <div class="listing-location">{{ listing.city }}</div>
+                        </div> -->
+
+                        <!-- {% if youtube_url %}
+                        <div class="youtube-video mt-4">
+                            <iframe width="100%" height="315"
+                                src="{{ youtube_url }}?autoplay=1&mute=1&loop=1&playlist={{ video_id }}" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        {% endif %} -->
+
+
+
+                        <div class="listing-details mt-4">
+                            <div class="section">
+                                <h2 class="section-title">About this space</h2>
+                                <p>{{ listing.description }}</p>
+                            </div>
+
+                            <div class="section">
+                                <h2 class="section-title">What this place offers</h2>
+                                <div class="amenities-grid">
+                                    {% for amenity in listing.amenities.all %}
+                                    <div class="amenity-item">
+                                        <span>{{ amenity.name }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review Form (Visible to Logged-In Users) -->
+                        {% if request.user.is_authenticated and request.user.role == 'customer' %}
+                        <div class="review-form-section">
+                            <h2 class="section-heading">Leave a Review</h2>
+                            <form method="post" action="{% url 'airbnb:add_review' listing.id %}" class="review-form">
+                                {% csrf_token %}
+                                <!-- Rating Inputs -->
+                                <div class="rating-inputs">
+                                    <div class="rating-input-group">
+                                        <div class="rating-label-wrapper">
+                                            <label class="rating-label">Cleanliness</label>
+                                            <div class="star-rating">
+                                                {% for i in "54321" %}
+                                                <input type="radio" id="cleanliness_{{ i }}" name="cleanliness_rating"
+                                                    value="{{ i }}" required>
+                                                <label for="cleanliness_{{ i }}" title="{{ i }} stars">&#9733;</label>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="rating-input-group">
+                                        <div class="rating-label-wrapper">
+                                            <label class="rating-label">Check-in</label>
+                                            <div class="star-rating">
+                                                {% for i in "54321" %}
+                                                <input type="radio" id="checkin_{{ i }}" name="checkin_rating"
+                                                    value="{{ i }}" required>
+                                                <label for="checkin_{{ i }}" title="{{ i }} stars">&#9733;</label>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="rating-input-group">
+                                        <div class="rating-label-wrapper">
+                                            <label class="rating-label">Value</label>
+                                            <div class="star-rating">
+                                                {% for i in "54321" %}
+                                                <input type="radio" id="value_{{ i }}" name="value_rating"
+                                                    value="{{ i }}" required>
+                                                <label for="value_{{ i }}" title="{{ i }} stars">&#9733;</label>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- Comment Input -->
+                                <div class="comment-input">
+                                    <label for="comment" class="comment-label">Your Review</label>
+                                    <textarea name="comment" id="comment" rows="4" class="comment-box"
+                                        placeholder="Write your review here..." required></textarea>
+                                </div>
+                                <!-- Submit Button -->
+                                <button type="submit" class="submit-review-btn">Submit Review</button>
+                            </form>
+                        </div>
+                        {% elif request.user.role == 'host' %}
+                        <!-- Login Prompt for Non-Logged-In Users -->
+                        <div class="login-prompt">
+                            <p>Hosts can't write reviews</p>
+                            <!-- <a href="{% url 'login' %}" class="btn-login">Log In</a> -->
+                        </div>
+                        {% else %}
+                        <!-- Login Prompt for Non-Logged-In Users -->
+                        <div class="login-prompt">
+                            <p>You must login to write reviews</p>
+                            <a href="{% url 'login' %}" class="btn-login">Log In</a>
+                        </div>
+                        {% endif %}
+
+                        <div class="reviews-section mt-4">
+                            <div class="overall-rating-section">
+                                <div class="rating-header">
+                                    <div class="main-rating">
+                                        <h1>{{ average_ratings.overall|default:"0.0" }}</h1>
+                                    </div>
+                                    <div class="rating-subtitle">
+                                        <h3>Overall Rating</h3>
+                                        <p>Based on {{ all_reviews.count }} reviews</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="reviews-container mt-3">
+                                <h2>Reviews</h2>
+                                {% for review in reviews %}
+                                <div class="card mb-3 review-card">
+                                    <div class="card-body">
+                                        <div class="reviewer-info d-flex align-items-center mb-3">
+                                            <div class="reviewer-avatar me-3">
+                                                <i class="fas fa-user-circle fa-2x text-muted"></i>
+                                            </div>
+                                            <div class="reviewer-details">
+                                                <h5 class="card-title mb-0">{{ review.user.username }}</h5>
+                                                <small class="text-muted">{{ review.created_at|date:"F j, Y" }}</small>
+                                            </div>
+                                        </div>
+                                        <div class="review-text mb-3">
+                                            <p class="card-text">{{ review.comment }}</p>
+                                        </div>
+                                        <div class="rating-details">
+                                            <p class="mb-0">
+                                                <strong>Overall Rating:</strong>
+                                                {% with average=review|average_rating %}
+                                                {% for i in "12345" %}
+                                                {% if forloop.counter <= average %} <i class="fas fa-star text-warning">
+                                                    </i>
+                                                    {% else %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    <span class="text-muted">({{ average|floatformat:1 }}/5)</span>
+                                                    {% endwith %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="alert alert-info" role="alert">
+                                    No reviews yet. Be the first to leave a review!
+                                </div>
+                                {% endfor %}
+
+                                <!-- Add a link to view all reviews if there are more than 3 -->
+                                {% if listing.reviews.count > 3 %}
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'airbnb:all_reviews' listing.id %}" class="btn btn-primary">View All
+                                        Reviews</a> 
+
+                                </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {% if request.user.role == "customer" %}
+                    <div class="col-lg-4 col-md-5">
+                        {% if is_available %}
+                        <form id="pricing_form" method="POST" action="{% url 'airbnb:initiate_payment' listing.id %}">
+                            {% csrf_token %}
+                            <div class="price-card p-4 border rounded shadow-sm">
+                                <h3>Pricing Options</h3>
+                                <div class="btn-group mt-3" role="group">
+                                    <input type="radio" class="btn-check" name="pricing_mode" id="nightly" value="nightly" checked>
+                                    <label class="btn btn-outline-primary" for="nightly">Nightly</label>
+                    
+                                    <input type="radio" class="btn-check" name="pricing_mode" id="monthly" value="monthly">
+                                    <label class="btn btn-outline-primary" for="monthly">Monthly</label>
+                                </div>
+                    
+                                <div id="date_inputs" class="mt-4">
+                                    <label for="check_in">Check-in:</label>
+                                    <input type="date" id="check_in" name="check_in" class="form-control">
+                                    <label for="check_out" class="mt-3">Check-out:</label>
+                                    <input type="date" id="check_out" name="check_out" class="form-control">
+                                </div>
+                    
+                                <div id="month_inputs" class="mt-4" style="display: none;">
+                                    <label for="months">Number of Months:</label>
+                                    <select id="months" name="months" class="form-select">
+                                        <option value="">Select...</option>
+                                        {% for i in 12|to_range %}
+                                        <option value="{{ i }}">{{ i }} {{ i|pluralize:"month,months" }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                    
+                                <div class="mt-4">
+                                    <strong>Total Price:</strong>
+                                    <div id="total_price" style="font-size: 1.5rem; font-weight: bold;">$0.00</div>
+                                    <input type="hidden" id="hidden_total_price" name="total_price" value="0.00">
+                                </div>
+                    
+                                <div class="mt-4">
+                                    <label for="phone_number">Phone Number:</label>
+                                    <div class="d-flex">
+                                        <!-- Country Code Dropdown -->
+                                        <select id="country_code" name="country_code" class="form-select" style="max-width: 120px;">
+                                            <option value="+1" selected>+1 (US)</option>
+                                            <option value="+44">+44 (UK)</option>
+                                            <option value="+251">+251 (Ethiopia)</option>
+                                            <option value="+91">+91 (India)</option>
+                                            <option value="+61">+61 (Australia)</option>
+                                            <option value="+81">+81 (Japan)</option>
+                                            <!-- Add more countries as needed -->
+                                        </select>
+                                        <!-- Phone Number Input -->
+                                        <input type="text" id="phone_number" class="form-control ms-2" placeholder="Phone number">
+                                    </div>
+                                    <!-- Hidden Full Phone Number Field -->
+                                    <input type="hidden" id="full_phone_number" name="phone_number">
+                                </div>
+                    
+                                <div class="mt-4">
+                                    <button type="submit" id="submit_button" class="btn btn-primary w-100" disabled>Submit and Pay</button>
+                                </div>
+                    
+                                <!-- Hidden metadata for JS -->
+                                <div id="pricing_data" data-nightly-price="{{ listing.price_per_night }}"
+                                    data-monthly-price="{{ listing.price_per_month }}" data-minimum-stay="{{ listing.minimum_stay }}">
+                                </div>
+                            </div>
+                        </form>
+                        {% else %}
+                        <div class="alert alert-danger p-4 border rounded shadow-sm">
+                            <h3 class="text-danger">Sorry!</h3>
+                            <p>
+                                This listing is currently unavailable for booking.
+                                {% if days_left %}
+                                It will be available in <strong>{{ days_left }}</strong> day{{ days_left|pluralize }}.
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    
+
+                    {% endif %}
+
+                </div>
+            </div>
+
+
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+            <script src="{% static 'airbnb/listing_detail.js' %}"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const checkInInput = document.getElementById("check_in");
+                    const checkOutInput = document.getElementById("check_out");
+                    const monthsInput = document.getElementById("months");
+                    const pricingModeInputs = document.querySelectorAll("input[name='pricing_mode']");
+                    const dateInputs = document.getElementById("date_inputs");
+                    const monthInputs = document.getElementById("month_inputs");
+                    const totalPriceDiv = document.getElementById("total_price");
+                    const hiddenTotalPriceInput = document.getElementById("hidden_total_price");
+                    const submitButton = document.getElementById("submit_button");
+                    const pricingData = document.getElementById("pricing_data");
+
+                    // Retrieve pricing and minimum stay data
+                    const nightlyPrice = parseFloat(pricingData.dataset.nightlyPrice || 0);
+                    const monthlyPrice = parseFloat(pricingData.dataset.monthlyPrice || 0);
+                    const minimumStay = parseInt(pricingData.dataset.minimumStay || 1);
+
+                    function updateUI() {
+                        const pricingMode = document.querySelector("input[name='pricing_mode']:checked").value;
+
+                        if (pricingMode === "monthly") {
+                            dateInputs.style.display = "none";
+                            monthInputs.style.display = "block";
+                        } else {
+                            dateInputs.style.display = "block";
+                            monthInputs.style.display = "none";
+                        }
+                        calculateTotalPrice();
+                    }
+
+                    function calculateTotalPrice() {
+                        const pricingMode = document.querySelector("input[name='pricing_mode']:checked").value;
+
+                        let totalPrice = 0;
+
+                        if (pricingMode === "monthly") {
+                            const months = parseInt(monthsInput.value || 0);
+                            if (months > 0) {
+                                totalPrice = monthlyPrice * months;
+                                submitButton.disabled = false;
+                            } else {
+                                totalPrice = 0;
+                                submitButton.disabled = true;
+                            }
+                        } else {
+                            const checkIn = new Date(checkInInput.value);
+                            const checkOut = new Date(checkOutInput.value);
+
+                            if (checkInInput.value && checkOutInput.value && checkOut > checkIn) {
+                                const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                                if (nights >= minimumStay) {
+                                    totalPrice = nightlyPrice * nights;
+                                    submitButton.disabled = false;
+                                } else {
+                                    totalPriceDiv.textContent = `Minimum stay is ${minimumStay} nights.`;
+                                    submitButton.disabled = true;
+                                    return;
+                                }
+                            } else {
+                                totalPrice = 0;
+                                submitButton.disabled = true;
+                            }
+                        }
+
+                        totalPriceDiv.textContent = `$${totalPrice.toFixed(2)}`;
+                        hiddenTotalPriceInput.value = totalPrice.toFixed(2);
+                    }
+
+                    // Attach event listeners
+                    pricingModeInputs.forEach(input => input.addEventListener("change", updateUI));
+                    checkInInput.addEventListener("change", calculateTotalPrice);
+                    checkOutInput.addEventListener("change", calculateTotalPrice);
+                    monthsInput.addEventListener("change", calculateTotalPrice);
+
+                    // Initialize UI
+                    updateUI();
+                });
+
+                document.addEventListener("DOMContentLoaded", () => {
+                    const checkInInput = document.getElementById("check_in");
+                    const checkOutInput = document.getElementById("check_out");
+                    const submitButton = document.getElementById("submit_button");
+                    const availabilityMessage = document.createElement("div");
+                    availabilityMessage.style.marginTop = "10px";
+                    submitButton.parentElement.appendChild(availabilityMessage);
+
+                    async function checkAvailability() {
+                        const checkIn = checkInInput.value;
+                        const checkOut = checkOutInput.value;
+
+                        if (!checkIn || !checkOut) {
+                            availabilityMessage.textContent = "";
+                            submitButton.disabled = true;
+                            return;
+                        }
+
+                        const url = `/check-availability/{{ listing.id }}/?check_in=${checkIn}&check_out=${checkOut}`;
+                        try {
+                            const response = await fetch(url);
+                            const data = await response.json();
+
+                            if (data.available) {
+                                availabilityMessage.textContent = data.message;
+                                availabilityMessage.style.color = "green";
+                                submitButton.disabled = false;
+                            } else {
+                                availabilityMessage.textContent = data.message;
+                                availabilityMessage.style.color = "red";
+                                submitButton.disabled = true;
+                            }
+                        } catch (error) {
+                            console.error("Error checking availability:", error);
+                            availabilityMessage.textContent = "Error checking availability. Please try again later.";
+                            availabilityMessage.style.color = "red";
+                            submitButton.disabled = true;
+                        }
+                    }
+
+                    // Attach event listeners to inputs
+                    checkInInput.addEventListener("change", checkAvailability);
+                    checkOutInput.addEventListener("change", checkAvailability);
+                });
+
+                document.addEventListener("DOMContentLoaded", () => {
+                    const countryCodeSelect = document.getElementById("country_code");
+                    const phoneNumberInput = document.getElementById("phone_number");
+                    const fullPhoneNumberInput = document.getElementById("full_phone_number");
+                    const submitButton = document.getElementById("submit_button");
+                
+                    // Update the hidden full phone number field on input or change
+                    function updateFullPhoneNumber() {
+                        const countryCode = countryCodeSelect.value;
+                        const phoneNumber = phoneNumberInput.value.trim();
+                
+                        // Combine country code and phone number
+                        if (phoneNumber) {
+                            fullPhoneNumberInput.value = `${countryCode}${phoneNumber}`;
+                            submitButton.disabled = false;
+                        } else {
+                            fullPhoneNumberInput.value = "";
+                            submitButton.disabled = true;
+                        }
+                    }
+                
+                    // Attach event listeners
+                    countryCodeSelect.addEventListener("change", updateFullPhoneNumber);
+                    phoneNumberInput.addEventListener("input", updateFullPhoneNumber);
+                
+                    // Initialize the full phone number field
+                    updateFullPhoneNumber();
+                });
+                
+                
+
+            </script>
+
+
+
+
+        </div>
+    </div>
+
+</body>
+
+</html>

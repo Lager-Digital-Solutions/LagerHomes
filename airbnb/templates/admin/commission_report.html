@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>Affiliate Commission Report</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Affiliate</th>
+            <th>Total Commission</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in report %}
+        <tr>
+            <td>{{ entry.affiliate }}</td>
+            <td>${{ entry.total_commission }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
