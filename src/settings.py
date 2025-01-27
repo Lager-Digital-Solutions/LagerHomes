@@ -21,7 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-h14^7ebqv!rk(0k^j*n2xffp+ch)o67ddmhe(ounrgsr2x^f1e'
+# SECRET_KEY = 'django-insecure-h14^7ebqv!rk(0k^j*n2xffp+ch)o67ddmhe(ounrgsr2x^f1e'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -90,12 +91,11 @@ WSGI_APPLICATION = 'src.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'defaultdb',  # Replace with your actual database name
-        'USER': 'avnadmin',  # Replace with your database username
-        'PASSWORD': 'AVNS__b6y7VLdkRY0Y5zipFB',  # Replace with your database password
-        'HOST': 'lagerhomes-lagerhomes.g.aivencloud.com',  # Replace with your Aiven host
-        'PORT': '10694',  # Replace with your Aiven port
-
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
     }
 }
 
@@ -154,8 +154,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'lagerhomes@gmail.com'  # Replace with your Gmail address
-EMAIL_HOST_PASSWORD = 'ghlh jrfi zwzg nois'  # Replace with your Gmail App Password
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Logging configuration
