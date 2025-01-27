@@ -87,7 +87,17 @@ WSGI_APPLICATION = 'src.wsgi.application'
 # }
 
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'defaultdb',  # Replace with your actual database name
+        'USER': 'avnadmin',  # Replace with your database username
+        'PASSWORD': 'AVNS__b6y7VLdkRY0Y5zipFB',  # Replace with your database password
+        'HOST': 'lagerhomes-lagerhomes.g.aivencloud.com',  # Replace with your Aiven host
+        'PORT': '10694',  # Replace with your Aiven port
 
+    }
+}
 
 
 # Password validation
